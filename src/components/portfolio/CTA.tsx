@@ -1,6 +1,6 @@
 import Reveal from "./Reveal";
 
-const WHATSAPP = "https://wa.me/5500000000000"; // placeholder — replace with real number
+const WHATSAPP = "https://wa.me/5561981201377"; // placeholder — replace with real number
 
 export default function CTA() {
   return (
@@ -17,12 +17,11 @@ export default function CTA() {
             <span className="h-px w-10 bg-champagne" />
           </div>
           <h2 className="font-serif text-5xl leading-[1.05] text-ink md:text-7xl lg:text-[5.5rem]">
-            Vamos transformar sua{" "}
-            <em className="text-champagne">presença digital</em>?
+            Vamos transformar sua <em className="text-champagne">presença digital</em>?
           </h2>
           <p className="mx-auto mt-8 max-w-2xl text-base leading-relaxed text-graphite md:text-lg">
-            Se você procura uma profissional dedicada para elevar sua marca através
-            do design e da estratégia, vamos conversar.
+            Se você procura uma profissional dedicada para elevar sua marca através do design e da estratégia, vamos
+            conversar.
           </p>
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
