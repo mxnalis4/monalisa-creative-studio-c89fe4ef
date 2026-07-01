@@ -19,7 +19,7 @@ export default function About() {
               <div className="organic-mask relative h-full w-full overflow-hidden border border-hairline bg-[#f6f1e7] shadow-[0_40px_80px_-40px_rgba(17,17,17,0.25)]">
                 {/* Placeholder — will be replaced with user photo */}
               <img 
-  src=“https://postimg.cc/LYJgWpWm” 
+  src=“https://postimg.cc/LYJgWpWm /” 
   alt=“Perfil” 
   className=“h-full w-full object-cover” 
 />
