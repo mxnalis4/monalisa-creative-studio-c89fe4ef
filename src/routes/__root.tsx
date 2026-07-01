@@ -89,6 +89,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Monalisa — Social Media & Designer Gráfica" },
+      { name: "description", content: "Monalisa Design Studio showcases a premium digital portfolio for a Social Media and Graphic Designer." },
+      { property: "og:description", content: "Monalisa Design Studio showcases a premium digital portfolio for a Social Media and Graphic Designer." },
+      { name: "twitter:description", content: "Monalisa Design Studio showcases a premium digital portfolio for a Social Media and Graphic Designer." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/50210b6f-d9a6-42c8-9123-1ceca25e4a85/id-preview-9208f813--e63c501a-d289-4262-b2f9-b66537fdd0df.lovable.app-1782923827775.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/50210b6f-d9a6-42c8-9123-1ceca25e4a85/id-preview-9208f813--e63c501a-d289-4262-b2f9-b66537fdd0df.lovable.app-1782923827775.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
