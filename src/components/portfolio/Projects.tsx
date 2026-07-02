@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { X, ExternalLink, Award } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { X, ExternalLink, Award, Upload, Trash2, Plus, ImageIcon } from "lucide-react";
 import Reveal from "./Reveal";
+import { useProjectImages } from "@/hooks/useProjectImages";
 
 type Project = {
   id: string;
@@ -8,7 +9,7 @@ type Project = {
   category: string;
   categoryKey: "Social Media" | "Branding" | "UX/UI" | "Design";
   short: string;
-  cover: string; // gradient class
+  cover: string; // gradient class fallback
   award?: string;
   link?: string;
   tools?: string[];
@@ -18,7 +19,6 @@ type Project = {
   challenge?: string;
   process?: string;
   result?: string;
-  gallery?: number; // number of placeholder tiles
 };
 
 const PROJECTS: Project[] = [
@@ -51,7 +51,6 @@ const PROJECTS: Project[] = [
       "Pesquisa com usuários, arquitetura da informação, prototipagem no Figma, testes de usabilidade e implementação full-stack.",
     result:
       "Solução premiada, com aprovação dos usuários testados e reconhecimento acadêmico como referência em inovação.",
-    gallery: 4,
   },
   {
     id: "aura-box",
@@ -80,7 +79,6 @@ const PROJECTS: Project[] = [
       "Moodboard, definição de paleta e tipografia, sistema de grid, aplicações em mockups e conteúdo editorial.",
     result:
       "Marca reconhecível, com padrão premium mantido em todos os canais.",
-    gallery: 6,
   },
   {
     id: "social",
@@ -92,7 +90,6 @@ const PROJECTS: Project[] = [
       "bg-[radial-gradient(120%_100%_at_50%_0%,#efe6d3_0%,#d7bf8a_50%,#3d2f16_100%)]",
     features: ["Posts", "Carrosséis", "Stories", "Criativos"],
     context: "Curadoria de artes desenvolvidas para diferentes marcas e nichos.",
-    gallery: 8,
   },
   {
     id: "impressos",
@@ -104,7 +101,6 @@ const PROJECTS: Project[] = [
       "bg-[radial-gradient(120%_100%_at_100%_100%,#e5e1d6_0%,#a89a7a_50%,#221d10_100%)]",
     features: ["Banners", "Panfletos", "Fachadas", "Materiais promocionais"],
     context: "Peças gráficas pensadas para causar impacto no ponto de venda.",
-    gallery: 6,
   },
   {
     id: "vestuario",
@@ -116,7 +112,6 @@ const PROJECTS: Project[] = [
       "bg-[radial-gradient(120%_100%_at_30%_80%,#f6e9dd_0%,#c69b7b_45%,#402315_100%)]",
     features: ["Estampas", "Artes exclusivas", "Coleções"],
     context: "Estampas autorais criadas para peças de vestuário.",
-    gallery: 6,
   },
 ];
 
@@ -187,37 +182,9 @@ export default function Projects() {
               <Reveal
                 key={p.id}
                 delay={i * 60}
-                className={`${span} group cursor-pointer overflow-hidden rounded-3xl border border-hairline bg-white`}
+                className={`${span} group overflow-hidden rounded-3xl border border-hairline bg-white`}
               >
-                <button
-                  onClick={() => setSelected(p)}
-                  className="flex h-full w-full flex-col text-left"
-                >
-                  <div
-                    className={`relative aspect-[16/10] w-full overflow-hidden ${p.cover}`}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                    {p.award && (
-                      <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.24em] text-white backdrop-blur">
-                        <Award size={12} /> Prêmio
-                      </div>
-                    )}
-                    <div className="absolute inset-x-6 bottom-6 flex items-end justify-between text-white">
-                      <div>
-                        <p className="text-[0.62rem] uppercase tracking-[0.28em] opacity-80">
-                          {p.category}
-                        </p>
-                        <h3 className="mt-2 font-serif text-2xl md:text-3xl">{p.name}</h3>
-                      </div>
-                      <span className="grid h-11 w-11 place-items-center rounded-full bg-white/95 text-ink transition-transform group-hover:-translate-y-1 group-hover:bg-champagne group-hover:text-white">
-                        →
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between px-6 py-5">
-                    <p className="text-sm text-graphite">{p.short}</p>
-                  </div>
-                </button>
+                <ProjectCard project={p} onOpen={() => setSelected(p)} />
               </Reveal>
             );
           })}
@@ -229,7 +196,87 @@ export default function Projects() {
   );
 }
 
+function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void }) {
+  const { cover, setCover, clearCover } = useProjectImages(project.id);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="flex h-full w-full flex-col text-left">
+      <div className={`relative aspect-[16/10] w-full overflow-hidden ${cover ? "" : project.cover}`}>
+        {cover && (
+          <img src={cover} alt={project.name} className="absolute inset-0 h-full w-full object-cover" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        {project.award && (
+          <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.24em] text-white backdrop-blur">
+            <Award size={12} /> Prêmio
+          </div>
+        )}
+
+        {/* Manage cover controls */}
+        <div className="absolute right-4 top-4 z-10 flex gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              inputRef.current?.click();
+            }}
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/90 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-ink backdrop-blur transition-colors hover:bg-champagne hover:text-white"
+            title="Adicionar foto de capa"
+          >
+            <Upload size={11} />
+            {cover ? "Trocar" : "Foto"}
+          </button>
+          {cover && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                clearCover();
+              }}
+              className="grid h-8 w-8 place-items-center rounded-full border border-white/40 bg-white/90 text-ink backdrop-blur transition-colors hover:bg-red-500 hover:text-white"
+              title="Remover foto"
+            >
+              <Trash2 size={12} />
+            </button>
+          )}
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) setCover(f);
+            e.target.value = "";
+          }}
+        />
+
+        <button
+          onClick={onOpen}
+          className="absolute inset-x-6 bottom-6 flex items-end justify-between text-left text-white"
+        >
+          <div>
+            <p className="text-[0.62rem] uppercase tracking-[0.28em] opacity-80">
+              {project.category}
+            </p>
+            <h3 className="mt-2 font-serif text-2xl md:text-3xl">{project.name}</h3>
+          </div>
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-white/95 text-ink transition-transform group-hover:-translate-y-1 group-hover:bg-champagne group-hover:text-white">
+            →
+          </span>
+        </button>
+      </div>
+      <button onClick={onOpen} className="flex items-center justify-between px-6 py-5 text-left">
+        <p className="text-sm text-graphite">{project.short}</p>
+      </button>
+    </div>
+  );
+}
+
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+  const { cover, gallery, addGalleryImages, removeGalleryImage } = useProjectImages(project.id);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/60 p-2 backdrop-blur-md sm:p-6"
@@ -250,7 +297,10 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         </button>
 
         <div className="overflow-y-auto">
-          <div className={`relative flex aspect-[16/8] w-full items-end ${project.cover}`}>
+          <div className={`relative flex aspect-[16/8] w-full items-end overflow-hidden ${cover ? "" : project.cover}`}>
+            {cover && (
+              <img src={cover} alt={project.name} className="absolute inset-0 h-full w-full object-cover" />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="relative z-10 flex w-full flex-col gap-4 p-8 text-white md:p-12">
               {project.award && (
@@ -268,9 +318,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
 
           <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-12 p-8 md:grid-cols-3 md:p-12">
             <div className="space-y-8 md:col-span-2">
-              {project.context && (
-                <Block label="Contexto" text={project.context} />
-              )}
+              {project.context && <Block label="Contexto" text={project.context} />}
               {project.objective && <Block label="Objetivo" text={project.objective} />}
               {project.challenge && <Block label="Desafio" text={project.challenge} />}
               {project.process && <Block label="Processo" text={project.process} />}
@@ -320,26 +368,67 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
             </aside>
           </div>
 
-          {project.gallery && project.gallery > 0 && (
-            <div className="border-t border-hairline p-8 md:p-12">
-              <div className="mx-auto max-w-[1100px]">
-                <p className="eyebrow mb-6">Galeria</p>
+          <div className="border-t border-hairline p-8 md:p-12">
+            <div className="mx-auto max-w-[1100px]">
+              <div className="mb-6 flex items-end justify-between gap-4">
+                <div>
+                  <p className="eyebrow">Galeria</p>
+                  <p className="mt-2 text-sm text-graphite">
+                    Adicione fotos direto do seu dispositivo. Elas ficam salvas neste navegador.
+                  </p>
+                </div>
+                <button
+                  onClick={() => galleryInputRef.current?.click()}
+                  className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-[0.65rem] uppercase tracking-[0.24em] text-white transition-colors hover:bg-champagne"
+                >
+                  <Plus size={13} />
+                  Adicionar fotos
+                </button>
+                <input
+                  ref={galleryInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.length) addGalleryImages(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+
+              {gallery.length === 0 ? (
+                <button
+                  onClick={() => galleryInputRef.current?.click()}
+                  className="flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-hairline bg-gradient-to-br from-[#faf5ea] via-white to-[#efe6d3] px-6 py-16 text-graphite transition-colors hover:border-champagne hover:text-ink"
+                >
+                  <ImageIcon size={28} />
+                  <span className="text-sm">Toque para abrir sua galeria</span>
+                  <span className="text-[0.62rem] uppercase tracking-[0.28em]">
+                    JPG, PNG, WEBP
+                  </span>
+                </button>
+              ) : (
                 <div className="columns-1 gap-4 sm:columns-2 md:columns-3">
-                  {Array.from({ length: project.gallery }).map((_, i) => (
+                  {gallery.map((src, i) => (
                     <div
                       key={i}
-                      className="mb-4 flex aspect-[4/5] items-center justify-center break-inside-avoid rounded-2xl border border-hairline bg-gradient-to-br from-[#faf5ea] via-white to-[#efe6d3] text-graphite"
-                      style={{ aspectRatio: i % 3 === 0 ? "3/4" : i % 3 === 1 ? "4/5" : "1/1" }}
+                      className="group relative mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-hairline"
                     >
-                      <span className="text-[0.62rem] uppercase tracking-[0.28em]">
-                        Imagem {String(i + 1).padStart(2, "0")}
-                      </span>
+                      <img src={src} alt={`${project.name} ${i + 1}`} className="w-full" />
+                      <button
+                        onClick={() => removeGalleryImage(i)}
+                        className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/95 text-ink opacity-0 shadow transition-all hover:bg-red-500 hover:text-white group-hover:opacity-100"
+                        title="Remover"
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
