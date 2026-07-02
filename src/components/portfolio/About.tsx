@@ -1,4 +1,5 @@
 import Reveal from "./Reveal";
+import monalisaAsset from "@/assets/monalisa.jpeg.asset.json";
 
 const VALUES = [
   { t: "Criatividade", d: "Soluções visuais originais que traduzem a essência de cada marca." },
@@ -17,12 +18,12 @@ export default function About() {
               {/* soft glow */}
               <div className="absolute -inset-6 rounded-[46%_54%_48%_52%/44%_46%_54%_56%] bg-champagne/15 blur-2xl" />
               <div className="organic-mask relative h-full w-full overflow-hidden border border-hairline bg-[#f6f1e7] shadow-[0_40px_80px_-40px_rgba(17,17,17,0.25)]">
-                {/* Placeholder — will be replaced with user photo */}
-              <img 
-  src=“https://postimg.cc/LYJgWpWm /” 
-  alt=“Perfil” 
-  className=“h-full w-full object-cover” 
-/>
+                <img
+                  src={monalisaAsset.url}
+                  alt="Monalisa — Social Media e Designer Gráfica"
+                  className="h-full w-full object-cover"
+                />
+              </div>
               {/* corner tag */}
               <div className="absolute -bottom-6 -right-4 rounded-full border border-hairline bg-white px-5 py-3 shadow-[0_20px_40px_-20px_rgba(17,17,17,0.2)]">
                 <p className="text-[0.62rem] uppercase tracking-[0.32em] text-graphite">
