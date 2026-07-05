@@ -9,7 +9,7 @@ export default function Footer() {
             Instagram
           </a>
           <span className="h-1 w-1 rounded-full bg-hairline" />
-          <a href="https://wa.me/5500000000000" target="_blank" rel="noreferrer" className="transition-colors hover:text-champagne">
+          <a href="https://wa.me/5561981201377" target="_blank" rel="noreferrer" className="transition-colors hover:text-champagne">
             WhatsApp
           </a>
           <span className="h-1 w-1 rounded-full bg-hairline" />
@@ -17,7 +17,7 @@ export default function Footer() {
             Behance
           </a>
           <span className="h-1 w-1 rounded-full bg-hairline" />
-          <a href="mailto:contato@monalisa.com" className="transition-colors hover:text-champagne">
+          <a href="mailto:henkellmonalisa70@gmail.com" className="transition-colors hover:text-champagne">
             E-mail
           </a>
         </div>

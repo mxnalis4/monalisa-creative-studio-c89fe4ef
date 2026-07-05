@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { X, ExternalLink, Award, Upload, Trash2, Plus, ImageIcon } from "lucide-react";
 import Reveal from "./Reveal";
 import { useProjectImages } from "@/hooks/useProjectImages";
+import { useAdminMode } from "@/hooks/useAdminMode";
 
 type Project = {
   id: string;
@@ -198,6 +199,7 @@ export default function Projects() {
 
 function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void }) {
   const { cover, setCover, clearCover } = useProjectImages(project.id);
+  const isAdmin = useAdminMode();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -213,43 +215,47 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
           </div>
         )}
 
-        {/* Manage cover controls */}
-        <div className="absolute right-4 top-4 z-10 flex gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              inputRef.current?.click();
-            }}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/90 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-ink backdrop-blur transition-colors hover:bg-champagne hover:text-white"
-            title="Adicionar foto de capa"
-          >
-            <Upload size={11} />
-            {cover ? "Trocar" : "Foto"}
-          </button>
-          {cover && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                clearCover();
+        {/* Manage cover controls (admin only) */}
+        {isAdmin && (
+          <>
+            <div className="absolute right-4 top-4 z-10 flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  inputRef.current?.click();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/90 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-ink backdrop-blur transition-colors hover:bg-champagne hover:text-white"
+                title="Adicionar foto de capa"
+              >
+                <Upload size={11} />
+                {cover ? "Trocar" : "Foto"}
+              </button>
+              {cover && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearCover();
+                  }}
+                  className="grid h-8 w-8 place-items-center rounded-full border border-white/40 bg-white/90 text-ink backdrop-blur transition-colors hover:bg-red-500 hover:text-white"
+                  title="Remover foto"
+                >
+                  <Trash2 size={12} />
+                </button>
+              )}
+            </div>
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) setCover(f);
+                e.target.value = "";
               }}
-              className="grid h-8 w-8 place-items-center rounded-full border border-white/40 bg-white/90 text-ink backdrop-blur transition-colors hover:bg-red-500 hover:text-white"
-              title="Remover foto"
-            >
-              <Trash2 size={12} />
-            </button>
-          )}
-        </div>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) setCover(f);
-            e.target.value = "";
-          }}
-        />
+            />
+          </>
+        )}
 
         <button
           onClick={onOpen}
@@ -276,6 +282,7 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
   const { cover, gallery, addGalleryImages, removeGalleryImage } = useProjectImages(project.id);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const isAdmin = useAdminMode();
 
   return (
     <div
@@ -368,67 +375,79 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
             </aside>
           </div>
 
-          <div className="border-t border-hairline p-8 md:p-12">
-            <div className="mx-auto max-w-[1100px]">
-              <div className="mb-6 flex items-end justify-between gap-4">
-                <div>
-                  <p className="eyebrow">Galeria</p>
-                  <p className="mt-2 text-sm text-graphite">
-                    Adicione fotos direto do seu dispositivo. Elas ficam salvas neste navegador.
-                  </p>
-                </div>
-                <button
-                  onClick={() => galleryInputRef.current?.click()}
-                  className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-[0.65rem] uppercase tracking-[0.24em] text-white transition-colors hover:bg-champagne"
-                >
-                  <Plus size={13} />
-                  Adicionar fotos
-                </button>
-                <input
-                  ref={galleryInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files?.length) addGalleryImages(e.target.files);
-                    e.target.value = "";
-                  }}
-                />
-              </div>
-
-              {gallery.length === 0 ? (
-                <button
-                  onClick={() => galleryInputRef.current?.click()}
-                  className="flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-hairline bg-gradient-to-br from-[#faf5ea] via-white to-[#efe6d3] px-6 py-16 text-graphite transition-colors hover:border-champagne hover:text-ink"
-                >
-                  <ImageIcon size={28} />
-                  <span className="text-sm">Toque para abrir sua galeria</span>
-                  <span className="text-[0.62rem] uppercase tracking-[0.28em]">
-                    JPG, PNG, WEBP
-                  </span>
-                </button>
-              ) : (
-                <div className="columns-1 gap-4 sm:columns-2 md:columns-3">
-                  {gallery.map((src, i) => (
-                    <div
-                      key={i}
-                      className="group relative mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-hairline"
-                    >
-                      <img src={src} alt={`${project.name} ${i + 1}`} className="w-full" />
+          {(isAdmin || gallery.length > 0) && (
+            <div className="border-t border-hairline p-8 md:p-12">
+              <div className="mx-auto max-w-[1100px]">
+                <div className="mb-6 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="eyebrow">Galeria</p>
+                    {isAdmin && (
+                      <p className="mt-2 text-sm text-graphite">
+                        Adicione fotos direto do seu dispositivo. Elas ficam salvas neste navegador.
+                      </p>
+                    )}
+                  </div>
+                  {isAdmin && (
+                    <>
                       <button
-                        onClick={() => removeGalleryImage(i)}
-                        className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/95 text-ink opacity-0 shadow transition-all hover:bg-red-500 hover:text-white group-hover:opacity-100"
-                        title="Remover"
+                        onClick={() => galleryInputRef.current?.click()}
+                        className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-[0.65rem] uppercase tracking-[0.24em] text-white transition-colors hover:bg-champagne"
                       >
-                        <Trash2 size={13} />
+                        <Plus size={13} />
+                        Adicionar fotos
                       </button>
-                    </div>
-                  ))}
+                      <input
+                        ref={galleryInputRef}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files?.length) addGalleryImages(e.target.files);
+                          e.target.value = "";
+                        }}
+                      />
+                    </>
+                  )}
                 </div>
-              )}
+
+                {gallery.length === 0 ? (
+                  isAdmin && (
+                    <button
+                      onClick={() => galleryInputRef.current?.click()}
+                      className="flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-hairline bg-gradient-to-br from-[#faf5ea] via-white to-[#efe6d3] px-6 py-16 text-graphite transition-colors hover:border-champagne hover:text-ink"
+                    >
+                      <ImageIcon size={28} />
+                      <span className="text-sm">Toque para abrir sua galeria</span>
+                      <span className="text-[0.62rem] uppercase tracking-[0.28em]">
+                        JPG, PNG, WEBP
+                      </span>
+                    </button>
+                  )
+                ) : (
+                  <div className="columns-1 gap-4 sm:columns-2 md:columns-3">
+                    {gallery.map((src, i) => (
+                      <div
+                        key={i}
+                        className="group relative mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-hairline"
+                      >
+                        <img src={src} alt={`${project.name} ${i + 1}`} className="w-full" />
+                        {isAdmin && (
+                          <button
+                            onClick={() => removeGalleryImage(i)}
+                            className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/95 text-ink shadow transition-all hover:bg-red-500 hover:text-white sm:opacity-0 sm:group-hover:opacity-100"
+                            title="Remover"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
