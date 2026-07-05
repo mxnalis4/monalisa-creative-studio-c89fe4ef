@@ -199,6 +199,7 @@ export default function Projects() {
 
 function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void }) {
   const { cover, setCover, clearCover } = useProjectImages(project.id);
+  const isAdmin = useAdminMode();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
