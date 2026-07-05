@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { X, ExternalLink, Award, Upload, Trash2, Plus, ImageIcon } from "lucide-react";
 import Reveal from "./Reveal";
 import { useProjectImages } from "@/hooks/useProjectImages";
+import { useAdminMode } from "@/hooks/useAdminMode";
 
 type Project = {
   id: string;
@@ -213,43 +214,47 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
           </div>
         )}
 
-        {/* Manage cover controls */}
-        <div className="absolute right-4 top-4 z-10 flex gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              inputRef.current?.click();
-            }}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/90 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-ink backdrop-blur transition-colors hover:bg-champagne hover:text-white"
-            title="Adicionar foto de capa"
-          >
-            <Upload size={11} />
-            {cover ? "Trocar" : "Foto"}
-          </button>
-          {cover && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                clearCover();
+        {/* Manage cover controls (admin only) */}
+        {isAdmin && (
+          <>
+            <div className="absolute right-4 top-4 z-10 flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  inputRef.current?.click();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/90 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-ink backdrop-blur transition-colors hover:bg-champagne hover:text-white"
+                title="Adicionar foto de capa"
+              >
+                <Upload size={11} />
+                {cover ? "Trocar" : "Foto"}
+              </button>
+              {cover && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearCover();
+                  }}
+                  className="grid h-8 w-8 place-items-center rounded-full border border-white/40 bg-white/90 text-ink backdrop-blur transition-colors hover:bg-red-500 hover:text-white"
+                  title="Remover foto"
+                >
+                  <Trash2 size={12} />
+                </button>
+              )}
+            </div>
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) setCover(f);
+                e.target.value = "";
               }}
-              className="grid h-8 w-8 place-items-center rounded-full border border-white/40 bg-white/90 text-ink backdrop-blur transition-colors hover:bg-red-500 hover:text-white"
-              title="Remover foto"
-            >
-              <Trash2 size={12} />
-            </button>
-          )}
-        </div>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) setCover(f);
-            e.target.value = "";
-          }}
-        />
+            />
+          </>
+        )}
 
         <button
           onClick={onOpen}
