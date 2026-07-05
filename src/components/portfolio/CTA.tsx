@@ -1,6 +1,6 @@
 import Reveal from "./Reveal";
 
-const WHATSAPP = "https://wa.me/5561981201377"; // placeholder — replace with real number
+const WHATSAPP = "https://wa.me/5561981201377";
 
 export default function CTA() {
   return (
@@ -35,7 +35,7 @@ export default function CTA() {
               <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
             </a>
             <a
-              href="mailto:contato@monalisa.com"
+              href="mailto:henkellmonalisa70@gmail.com"
               className="inline-flex items-center gap-3 rounded-full border border-ink/20 px-8 py-4 text-[0.72rem] uppercase tracking-[0.28em] text-ink transition-all hover:border-champagne hover:text-champagne"
             >
               Enviar e-mail
