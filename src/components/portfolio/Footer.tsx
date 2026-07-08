@@ -5,8 +5,8 @@ export default function Footer() {
       <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-8 px-6 md:px-10">
         <p className="font-serif text-3xl tracking-[0.28em] text-ink">MONALISA</p>
         <div className="flex flex-wrap items-center justify-center gap-6 text-[0.72rem] uppercase tracking-[0.28em] text-graphite">
-          <a href="https://instagram.com" target="_blank" rel="noreferrer" className="transition-colors hover:text-champagne">
-            Instagram
+          <a href="https://www.linkedin.com/in/monalisa-henkell-b2637a325?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank" rel="noreferrer" className="transition-colors hover:text-champagne">
+            LinkedIn
           </a>
           <span className="h-1 w-1 rounded-full bg-hairline" />
           <a href="https://wa.me/5561981201377" target="_blank" rel="noreferrer" className="transition-colors hover:text-champagne">
