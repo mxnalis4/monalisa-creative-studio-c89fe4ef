@@ -27,7 +27,7 @@ export default function About() {
               {/* corner tag */}
               <div className="absolute -bottom-6 -right-4 rounded-full border border-hairline bg-white px-5 py-3 shadow-[0_20px_40px_-20px_rgba(17,17,17,0.2)]">
                 <p className="text-[0.62rem] uppercase tracking-[0.32em] text-graphite">
-                  Baseada em <span className="text-ink">Brasília</span>
+                  Com raízes em <span className="text-ink">Brasília</span> e mente no mundo digital
                 </p>
               </div>
             </div>
