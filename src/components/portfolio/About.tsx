@@ -44,16 +44,16 @@ export default function About() {
           </h2>
           <div className="mt-8 space-y-5 text-base leading-relaxed text-graphite md:text-lg">
             <p>
-              Sou Social Media e Designer Gráfica apaixonada por transformar ideias
-              em comunicação visual estratégica.
-            </p>
-            <p>
-              Mesmo no início da minha carreira, busco entregar projetos com atenção
-              aos detalhes, identidade forte e foco em resultados.
+              Sou Designer Gráfica, Social Media e especialista em tecnologia em
+              formação. Graduada em Análise e Desenvolvimento de Sistemas e
+              graduanda em Ciência da Computação, atuo no ponto exato onde o
+              Marketing, o UX/UI Design e o Front-End se encontram.
             </p>
             <p className="text-ink">
-              Acredito que um bom design transmite confiança antes mesmo da primeira
-              conversa.
+              Apaixonada por projetos criativos e inovadores, minha missão é
+              combinar inteligência de dados, lógica de programação e estratégia
+              visual para construir marcas fortes e experiências de usuário de alto
+              impacto.
             </p>
           </div>
 
