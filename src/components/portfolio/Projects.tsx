@@ -382,9 +382,9 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
                   <div>
                     <p className="eyebrow">Galeria</p>
                     {isAdmin && (
-                      <p className="mt-2 text-sm text-graphite">
-                        Adicione fotos direto do seu dispositivo. Elas ficam salvas neste navegador.
-                      </p>
+                    <p className="mt-2 text-sm text-graphite">
+                      Adicione fotos direto do seu dispositivo. Elas ficam salvas no banco de dados e aparecem para todos os visitantes.
+                    </p>
                     )}
                   </div>
                   {isAdmin && (
