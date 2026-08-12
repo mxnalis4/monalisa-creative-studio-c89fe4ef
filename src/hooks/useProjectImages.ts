@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { createUploadUrl, deleteImage, recordImage } from "@/lib/admin.functions";
+
 
 type ImageRow = {
   id: string;
