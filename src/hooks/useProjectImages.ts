@@ -91,23 +91,20 @@ export function useProjectImages(projectId: string) {
     async (file: File) => {
       const blob = await compress(file, 2000, 0.88);
       const path = `${projectId}/cover-${Date.now()}.jpg`;
-      const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, blob, {
-        contentType: "image/jpeg",
-        upsert: false,
-      });
-      if (upErr) {
-        console.error(upErr);
+      try {
+        const signed = await createUploadUrl({ data: { path } });
+        const { error: upErr } = await supabase.storage
+          .from(BUCKET)
+          .uploadToSignedUrl(signed.path, signed.token, blob, { contentType: "image/jpeg" });
+        if (upErr) throw upErr;
+        if (coverId && coverPath) {
+          await deleteImage({ data: { id: coverId, path: coverPath } });
+        }
+        await recordImage({ data: { projectId, path, kind: "cover", sortOrder: 0 } });
+      } catch (err) {
+        console.error(err);
         return;
       }
-      // remove previous cover (row + storage)
-      if (coverId && coverPath) {
-        await supabase.storage.from(BUCKET).remove([coverPath]);
-        await supabase.from("project_images").delete().eq("id", coverId);
-      }
-      const { error: insErr } = await supabase
-        .from("project_images")
-        .insert({ project_id: projectId, storage_path: path, url: "", kind: "cover", sort_order: 0 });
-      if (insErr) console.error(insErr);
       await load();
     },
     [projectId, coverId, coverPath, load],
@@ -115,8 +112,12 @@ export function useProjectImages(projectId: string) {
 
   const clearCover = useCallback(async () => {
     if (!coverId || !coverPath) return;
-    await supabase.storage.from(BUCKET).remove([coverPath]);
-    await supabase.from("project_images").delete().eq("id", coverId);
+    try {
+      await deleteImage({ data: { id: coverId, path: coverPath } });
+    } catch (err) {
+      console.error(err);
+      return;
+    }
     setCoverState(undefined);
     setCoverPath(undefined);
     setCoverId(undefined);
@@ -129,21 +130,17 @@ export function useProjectImages(projectId: string) {
       for (let i = 0; i < arr.length; i++) {
         const blob = await compress(arr[i]);
         const path = `${projectId}/gallery-${Date.now()}-${i}.jpg`;
-        const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, blob, {
-          contentType: "image/jpeg",
-          upsert: false,
-        });
-        if (upErr) {
-          console.error(upErr);
+        try {
+          const signed = await createUploadUrl({ data: { path } });
+          const { error: upErr } = await supabase.storage
+            .from(BUCKET)
+            .uploadToSignedUrl(signed.path, signed.token, blob, { contentType: "image/jpeg" });
+          if (upErr) throw upErr;
+          await recordImage({ data: { projectId, path, kind: "gallery", sortOrder: base + i } });
+        } catch (err) {
+          console.error(err);
           continue;
         }
-        await supabase.from("project_images").insert({
-          project_id: projectId,
-          storage_path: path,
-          url: "",
-          kind: "gallery",
-          sort_order: base + i,
-        });
       }
       await load();
     },
@@ -155,12 +152,17 @@ export function useProjectImages(projectId: string) {
       const item = gallery[index];
       if (!item) return;
       const path = galleryPaths[item.id];
-      if (path) await supabase.storage.from(BUCKET).remove([path]);
-      await supabase.from("project_images").delete().eq("id", item.id);
+      try {
+        await deleteImage({ data: { id: item.id, path: path ?? "" } });
+      } catch (err) {
+        console.error(err);
+        return;
+      }
       await load();
     },
     [gallery, galleryPaths, load],
   );
+
 
   return {
     cover,
