@@ -15,10 +15,33 @@ type GalleryItem = { id: string; url: string };
 const BUCKET = "project-images";
 const SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
 
-async function sign(path: string): Promise<string | null> {
-  const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_TTL);
-  return data?.signedUrl ?? null;
+const urlCache = new Map<string, { url: string; exp: number }>();
+
+async function signMany(paths: string[]): Promise<Record<string, string>> {
+  const now = Date.now();
+  const out: Record<string, string> = {};
+  const missing: string[] = [];
+  for (const p of paths) {
+    const hit = urlCache.get(p);
+    if (hit && hit.exp > now) out[p] = hit.url;
+    else missing.push(p);
+  }
+  if (missing.length) {
+    const { data } = await supabase.storage.from(BUCKET).createSignedUrls(missing, SIGNED_URL_TTL);
+    for (const d of data ?? []) {
+      if (d.signedUrl && d.path) {
+        out[d.path] = d.signedUrl;
+        urlCache.set(d.path, { url: d.signedUrl, exp: now + (SIGNED_URL_TTL - 3600) * 1000 });
+      }
+    }
+  }
+  return out;
 }
+
+async function sign(path: string): Promise<string | null> {
+  return (await signMany([path]))[path] ?? null;
+}
+
 
 async function compress(file: File, maxDim = 1800, quality = 0.86): Promise<Blob> {
   const dataUrl: string = await new Promise((res, rej) => {
