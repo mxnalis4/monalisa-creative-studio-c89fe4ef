@@ -431,7 +431,14 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
                         key={i}
                         className="group relative mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-hairline"
                       >
-                        <img src={src} alt={`${project.name} ${i + 1}`} className="w-full" />
+                        <img
+                          src={src}
+                          alt={`${project.name} ${i + 1}`}
+                          loading={i < 3 ? "eager" : "lazy"}
+                          decoding="async"
+                          className="w-full bg-[#f6f5f2]"
+                        />
+
                         {isAdmin && (
                           <button
                             onClick={() => removeGalleryImage(i)}
