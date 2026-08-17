@@ -86,10 +86,11 @@ export function useProjectImages(projectId: string) {
     if (error || !data) return;
     const rows = data as ImageRow[];
 
+    const urls = await signMany(rows.map((r) => r.storage_path));
+
     const coverRow = rows.find((r) => r.kind === "cover");
     if (coverRow) {
-      const url = await sign(coverRow.storage_path);
-      setCoverState(url ?? undefined);
+      setCoverState(urls[coverRow.storage_path]);
       setCoverPath(coverRow.storage_path);
       setCoverId(coverRow.id);
     } else {
@@ -99,11 +100,10 @@ export function useProjectImages(projectId: string) {
     }
 
     const gRows = rows.filter((r) => r.kind === "gallery");
-    const signed = await Promise.all(
-      gRows.map(async (r) => ({ id: r.id, url: (await sign(r.storage_path)) ?? "", path: r.storage_path })),
-    );
+    const signed = gRows.map((r) => ({ id: r.id, url: urls[r.storage_path] ?? "", path: r.storage_path }));
     setGallery(signed.filter((s) => s.url).map(({ id, url }) => ({ id, url })));
     setGalleryPaths(Object.fromEntries(signed.map((s) => [s.id, s.path])));
+
   }, [projectId]);
 
   useEffect(() => {
