@@ -38,9 +38,6 @@ async function signMany(paths: string[]): Promise<Record<string, string>> {
   return out;
 }
 
-async function sign(path: string): Promise<string | null> {
-  return (await signMany([path]))[path] ?? null;
-}
 
 
 async function compress(file: File, maxDim = 1800, quality = 0.86): Promise<Blob> {
