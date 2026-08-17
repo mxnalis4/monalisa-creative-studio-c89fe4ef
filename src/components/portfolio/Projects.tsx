@@ -380,7 +380,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
               <div className="mx-auto max-w-[1100px]">
                 <div className="mb-6 flex items-end justify-between gap-4">
                   <div>
-                    <p className="eyebrow">Galeria</p>
+                    <p className="eyebrow">Imagens:</p>
                     {isAdmin && (
                     <p className="mt-2 text-sm text-graphite">
                       Adicione fotos direto do seu dispositivo. Elas ficam salvas no banco de dados e aparecem para todos os visitantes.
